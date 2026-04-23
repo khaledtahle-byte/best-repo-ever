@@ -1,4 +1,3 @@
 # best-repo-ever
 Hello World
-hel
->>>>>>> Stashed changes
+hello
