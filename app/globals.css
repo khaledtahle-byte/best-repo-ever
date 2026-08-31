@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * DealGuard uses a single dark navy theme with one sharp accent (signal cyan).
+ * Semantic verdict colours (good / review / bad) are deliberately kept far away
+ * from the brand accent so a verdict never reads as branding.
+ */
+@layer base {
+  :root {
+    --background: 214 60% 6%;
+    --foreground: 213 40% 94%;
+
+    --card: 214 52% 9%;
+    --card-foreground: 213 40% 94%;
+
+    --popover: 214 54% 8%;
+    --popover-foreground: 213 40% 94%;
+
+    --primary: 188 100% 47%;
+    --primary-foreground: 214 70% 7%;
+
+    --secondary: 214 40% 15%;
+    --secondary-foreground: 213 35% 90%;
+
+    --muted: 214 38% 14%;
+    --muted-foreground: 213 20% 66%;
+
+    --accent: 188 100% 47%;
+    --accent-foreground: 214 70% 7%;
+
+    --destructive: 356 79% 58%;
+    --destructive-foreground: 213 40% 96%;
+
+    --border: 214 36% 18%;
+    --input: 214 36% 18%;
+    --ring: 188 100% 47%;
+
+    --good: 158 74% 42%;
+    --review: 38 94% 55%;
+    --bad: 356 79% 58%;
+
+    --radius: 0.625rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  /* Tabular figures everywhere money is shown keeps cost columns aligned. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    @apply bg-primary/30 text-foreground;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  /* Subtle grid used behind the hero — no gradients, just structure. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.5) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.5) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  }
+
+  .skeleton {
+    @apply relative overflow-hidden rounded-md bg-muted;
+  }
+
+  .skeleton::after {
+    @apply absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/5 to-transparent;
+    content: '';
+  }
+}
