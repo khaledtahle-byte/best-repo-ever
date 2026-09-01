@@ -41,3 +41,6 @@ yarn-error.log*
 # supabase local
 supabase/.branches
 supabase/.temp
+
+# abou-sobhi (self-contained sub-app: its SQLite database is local state)
+abou-sobhi/data/

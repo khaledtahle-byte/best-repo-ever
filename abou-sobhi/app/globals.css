@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Foundations ─────────────────────────────────────────────────────────── */
+
+:root {
+  --paper: #fffbf3;
+  --cream: #f7efe1;
+  --ink: #17120e;
+  --line: #e8dfd1;
+  --yellow: #ffc629;
+  --red: #d7282f;
+  color-scheme: light;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-feature-settings: 'ss01', 'kern';
+  /* Warm paper grain, so large flat areas do not read as flat screen white. */
+  background-image:
+    radial-gradient(circle at 15% 12%, rgba(255, 198, 41, 0.09), transparent 42%),
+    radial-gradient(circle at 88% 4%, rgba(215, 40, 47, 0.07), transparent 38%);
+  background-attachment: fixed;
+}
+
+/* Arabic numerals stay Latin everywhere: the printed menu uses them and prices
+   in the millions are far easier to scan as 1,200,000 than ١٢٠٠٠٠٠. */
+[dir='rtl'] {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+::selection {
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+/* ── Components ──────────────────────────────────────────────────────────── */
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+  }
+
+  /* The red price tag lifted off the printed menu card. */
+  .price-chip {
+    @apply inline-flex items-center justify-center rounded-md bg-brand-red px-2.5 py-1
+           font-bold leading-none text-white shadow-chip tabular-nums;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm
+           font-bold transition active:scale-[.98] disabled:pointer-events-none
+           disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-brand-ink focus-visible:ring-offset-2
+           focus-visible:ring-offset-brand-paper;
+  }
+  .btn-primary {
+    @apply btn bg-brand-red text-white shadow-card hover:bg-brand-red-dark;
+  }
+  .btn-yellow {
+    @apply btn bg-brand-yellow text-brand-ink shadow-card hover:bg-brand-yellow-dark;
+  }
+  .btn-ink {
+    @apply btn bg-brand-ink text-white hover:bg-brand-char;
+  }
+  .btn-ghost {
+    @apply btn border border-brand-line bg-white/70 text-brand-char hover:bg-white;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .card {
+    @apply rounded-xl2 border border-brand-line bg-white shadow-card;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-brand-line bg-white px-3.5 py-2.5 text-sm
+           text-brand-ink placeholder:text-brand-muted/70 focus:border-brand-ink
+           focus:outline-none focus:ring-2 focus:ring-brand-yellow/60;
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-bold uppercase tracking-wide text-brand-muted;
+  }
+
+  .section-title {
+    @apply text-2xl font-extrabold tracking-tight text-brand-ink sm:text-3xl;
+  }
+
+  /* Diagonal barber-pole banding, echoing a vertical shawarma spit. */
+  .spit-stripes {
+    background-image: repeating-linear-gradient(
+      135deg,
+      rgba(23, 18, 14, 0.06) 0 10px,
+      transparent 10px 20px
+    );
+  }
+}
+
+/* ── Utilities ───────────────────────────────────────────────────────────── */
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .safe-bottom {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
+  }
+}
+
+/* ── Leaflet ─────────────────────────────────────────────────────────────── */
+
+.leaflet-container {
+  font: inherit;
+  border-radius: 0.9rem;
+  z-index: 0;
+}
+.leaflet-control-attribution {
+  font-size: 9px;
+  background: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* ── Thermal receipt ─────────────────────────────────────────────────────── */
+
+@media print {
+  body {
+    background: #fff !important;
+    background-image: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .receipt {
+    width: 72mm;
+    margin: 0;
+    padding: 0;
+    color: #000;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .receipt .price-chip {
+    background: none !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    font-weight: 700;
+  }
+  @page {
+    margin: 4mm;
+    size: 80mm auto;
+  }
+}
