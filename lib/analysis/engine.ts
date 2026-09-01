@@ -162,6 +162,14 @@ function pickBenchmark(
 }
 
 /** Positive means "this offer is more expensive than the benchmark". */
+/**
+ * Quantity thresholds count purchase units (cases, drums, blocks), never the
+ * inner unit of measure — a line quoted per kilo is still ordered by the case.
+ */
+function plural(count: number, noun: string): string {
+  return count === 1 ? noun : `${noun}s`;
+}
+
 function pctDelta(current: number, benchmark: number): number {
   if (!benchmark) return 0;
   return ((current - benchmark) / benchmark) * 100;
@@ -596,7 +604,7 @@ function buildLineFlags(ctx: LineFlagContext): Flag[] {
       severity: 'warning',
       title: `Rebate does not apply at this volume — ${line.description}`,
       detail: ctx.rebateShortfallUnits > 0
-        ? `The ${formatPercent(ctx.rebate.pct)} rebate needs ${Math.ceil(ctx.rebateShortfallUnits)} more ${line.uom === 'unit' ? 'units' : `${line.uom}s`} than you are ordering, so the quote's effective price assumes money you will not receive. It is worth ${formatCurrency(forgone, currency)}.`
+        ? `The ${formatPercent(ctx.rebate.pct)} rebate needs ${Math.ceil(ctx.rebateShortfallUnits)} more ${plural(Math.ceil(ctx.rebateShortfallUnits), 'unit')} than you are ordering, so the quote's effective price assumes money you will not receive. It is worth ${formatCurrency(forgone, currency)}.`
         : `The ${formatPercent(ctx.rebate.pct)} rebate threshold is not met by this order, so the ${formatCurrency(forgone, currency)} it implies is not real money yet.`,
       impactAmount: round(forgone),
       lineIndex: idx,
@@ -912,7 +920,7 @@ function buildAsks(
       asks.push({
         code: `rebate:${flag.lineIndex}`,
         ask: `Apply the rebate at the volume we actually order${
-          line ? ` (${Math.round(line.quantity)} ${line.uom === 'unit' ? 'units' : `${line.uom}s`})` : ''
+          line ? ` (${Math.round(line.quantity)} ${plural(Math.round(line.quantity), 'unit')})` : ''
         }, or drop the equivalent percentage into the invoice price.`,
         rationale: 'A rebate we cannot reach is not a discount.',
         value: flag.impactAmount ?? 0,

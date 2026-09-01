@@ -22,6 +22,28 @@ interface Series {
   points: Array<{ t: number; value: number }>;
 }
 
+/**
+ * A price chart anchored at zero flattens the very movement it exists to show,
+ * so the axis is scaled to the data — then rounded outwards to a round step so
+ * the tick labels are evenly spaced and readable.
+ */
+function niceDomain(values: number[]): [number, number] {
+  if (values.length === 0) return [0, 1];
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const spread = max - min || Math.max(max * 0.1, 0.01);
+  const step = niceStep(spread * 1.7);
+  return [Math.max(0, Math.floor((min - spread * 0.35) / step) * step), Math.ceil((max + spread * 0.35) / step) * step];
+}
+
+/** Rounds an interval up to the nearest 1, 2 or 5 times a power of ten. */
+function niceStep(interval: number): number {
+  const magnitude = 10 ** Math.floor(Math.log10(Math.max(interval, 1e-9)));
+  const normalised = interval / magnitude;
+  const factor = normalised <= 1 ? 1 : normalised <= 2 ? 2 : normalised <= 5 ? 5 : 10;
+  return (factor * magnitude) / 4;
+}
+
 const SERIES_COLORS = [
   'hsl(188 100% 47%)',
   'hsl(38 94% 55%)',
@@ -50,7 +72,7 @@ export function PriceHistoryChart({
   const [selected, setSelected] = useState<string>(products[0]?.key ?? '');
   const active = products.find((p) => p.key === selected) ?? products[0];
 
-  const { series, data } = useMemo(() => {
+  const { series, data, domain } = useMemo(() => {
     const filtered = rows.filter((row) => row.product_key === active?.key);
     const bySupplier = new Map<string, Series>();
 
@@ -79,7 +101,12 @@ export function PriceHistoryChart({
       return entry;
     });
 
-    return { series: list, data: rowsForChart };
+    // A price chart anchored at zero flattens the very movement it exists to
+    // show, so the axis is scaled to the data with room to breathe.
+    const values = filtered.map((row) => Number(row.true_net_unit_cost)).filter(Number.isFinite);
+    const domain = niceDomain(values);
+
+    return { series: list, data: rowsForChart, domain };
   }, [rows, active?.key]);
 
   if (products.length === 0 || !active) {
@@ -136,11 +163,12 @@ export function PriceHistoryChart({
               minTickGap={32}
             />
             <YAxis
+              domain={domain}
               stroke="hsl(213 20% 66%)"
               fontSize={11}
               tickLine={false}
               axisLine={false}
-              width={64}
+              width={72}
               tickFormatter={(value: number) => formatUnitPrice(value, currency)}
             />
             <Tooltip
@@ -153,7 +181,7 @@ export function PriceHistoryChart({
                 dataKey={s.supplierName}
                 stroke={SERIES_COLORS[s.colorIndex % SERIES_COLORS.length]}
                 strokeWidth={2}
-                dot={{ r: 3 }}
+                dot={{ r: 4, strokeWidth: 2, fill: 'hsl(214 52% 9%)', stroke: SERIES_COLORS[s.colorIndex % SERIES_COLORS.length] }}
                 activeDot={{ r: 5 }}
                 connectNulls
               />

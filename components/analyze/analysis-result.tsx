@@ -20,12 +20,13 @@ export function AnalysisResult({
     <div className="space-y-6">
       <VerdictBanner analysis={analysis} />
 
-      <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
-        <CostBreakdownTable analysis={analysis} />
-        <div className="space-y-6">
-          <CostWaterfall analysis={analysis} />
-          <TermsPanel analysis={analysis} />
-        </div>
+      {/* The line table carries the most columns, so it gets the full row; the
+          two summary panels read fine at half width. */}
+      <CostBreakdownTable analysis={analysis} />
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <CostWaterfall analysis={analysis} />
+        <TermsPanel analysis={analysis} />
       </div>
 
       <FlagList flags={analysis.flags} currency={analysis.currency} />

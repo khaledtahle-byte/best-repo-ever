@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useId, useMemo, useState } from 'react';
 import { Loader2, Plus, Trash2, Wand2 } from 'lucide-react';
 import type { Fee, OfferInput, OfferLineInput } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -191,12 +191,17 @@ export function draftToOffer(draft: OfferDraft): OfferInput {
   };
 }
 
+/**
+ * Deriving the id from the label alone repeated it on every line row, so a
+ * label click focused the first row's input instead of its own. useId gives
+ * each instance its own.
+ */
 function Field({
   label,
   className,
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
-  const id = `field-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+  const id = useId();
   return (
     <div className={cn('space-y-1.5', className)}>
       <Label htmlFor={id} className="text-xs text-muted-foreground">

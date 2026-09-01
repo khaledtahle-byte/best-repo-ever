@@ -67,7 +67,7 @@ export function TermsPanel({ analysis }: { analysis: OfferAnalysis }) {
       <CardHeader>
         <CardTitle>Commercial terms</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-5 sm:grid-cols-2">
+      <CardContent className="grid gap-5 xl:grid-cols-2">
         {items.map((item) => (
           <div key={item.label} className="flex gap-3">
             <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-secondary text-muted-foreground">
