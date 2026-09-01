@@ -1,11 +1,32 @@
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { requireSessionContext } from '@/lib/auth';
+import { isSupabaseConfigured } from '@/lib/supabase/env';
+import { SetupNotice } from '@/components/setup-notice';
+import { Logo } from '@/components/logo';
 import { Sidebar } from '@/components/app/sidebar';
 import { UserMenu } from '@/components/app/user-menu';
 import { Button } from '@/components/ui/button';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  // Running without credentials is a setup state, not a crash.
+  if (!isSupabaseConfigured()) {
+    const missing = [
+      'NEXT_PUBLIC_SUPABASE_URL',
+      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+      'SUPABASE_SERVICE_ROLE_KEY',
+    ].filter((name) => !process.env[name]);
+
+    return (
+      <div className="min-h-screen px-5 py-10">
+        <div className="mx-auto w-full max-w-2xl space-y-8">
+          <Logo />
+          <SetupNotice missing={missing} />
+        </div>
+      </div>
+    );
+  }
+
   const session = await requireSessionContext();
 
   return (

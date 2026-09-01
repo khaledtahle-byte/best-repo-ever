@@ -5,6 +5,7 @@ import {
   type CounterAsk,
   type Fee,
   type Flag,
+  type FlagCode,
   type HistoryPoint,
   type LineAnalysis,
   type OfferAnalysis,
@@ -414,10 +415,16 @@ export function analyzeOffer(
   const weighted = sum(analyzed.map((l) => l.score * Math.max(l.invoiceTotal, 1)));
   const weight = sum(analyzed.map((l) => Math.max(l.invoiceTotal, 1)));
   let score = analyzed.length === 0 ? 50 : weighted / weight;
+
+  // Order-level flags adjust the score only for things the line scores do not
+  // already price in. Freight and surcharges are allocated to every line, so
+  // scoring the order-level hidden-cost flag as well would charge for them
+  // twice. The flag still shows in the UI at full prominence.
   for (const flag of orderFlags) {
-    if (flag.severity === 'critical') score -= 8;
-    else if (flag.severity === 'warning') score -= 4;
-    else if (flag.severity === 'positive') score += 3;
+    if (SCORED_AT_LINE_LEVEL.has(flag.code)) continue;
+    if (flag.severity === 'critical') score -= 5;
+    else if (flag.severity === 'warning') score -= 3;
+    else if (flag.severity === 'positive') score += 2;
   }
   score = clamp(Math.round(score), 0, 100);
 
@@ -454,6 +461,9 @@ export function analyzeOffer(
     options,
   };
 }
+
+/** Codes whose cost is already reflected in the per-line scores. */
+const SCORED_AT_LINE_LEVEL = new Set<FlagCode>(['hidden_cost', 'unqualified_rebate']);
 
 const SAVINGS_FLAGS = new Set([
   'worse_than_last',
@@ -748,7 +758,10 @@ function scoreLine(args: {
     // Positive delta = more expensive than the benchmark.
     score -= clamp(benchmark.deltaPct * 3, -25, 45);
   }
-  score -= clamp(discountGapPct * 1.5, 0, 15);
+  // The gap between headline and effective discount is mostly caused by freight
+  // and surcharges, which the hidden-cost term below already charges for. It is
+  // kept, but small, so it only adds weight for rebate timing and thresholds.
+  score -= clamp(discountGapPct * 0.75, 0, 8);
   score -= clamp((hiddenShare - options.hiddenCostThresholdPct) * 2, 0, 18);
   if (!rebateQualified) score -= 10;
 

@@ -1,7 +1,7 @@
 import { ArrowRight } from 'lucide-react';
 import { analyzeOffer } from '@/lib/analysis/engine';
 import { sampleHistory, sampleOffer } from '@/lib/sample-offer';
-import { formatCurrency, formatPercent, formatUnitPrice } from '@/lib/format';
+import { formatCurrency, formatPercent, formatSignedPercent, formatUnitPrice } from '@/lib/format';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -76,8 +76,7 @@ export function SampleBreakdown() {
                 line.benchmark.deltaPct > 0 ? 'text-bad' : 'text-good',
               )}
             >
-              {line.benchmark.deltaPct > 0 ? '+' : ''}
-              {line.benchmark.deltaPct.toFixed(1)}% vs your last order
+              {`${formatSignedPercent(line.benchmark.deltaPct)} vs your last order`}
             </span>
           </div>
         ) : null}

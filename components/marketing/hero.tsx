@@ -15,21 +15,20 @@ export function Hero() {
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-grid mask-fade-b opacity-[0.35]" />
 
       <div className="container relative py-20 lg:py-28">
-        <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
+        <div className="grid items-center gap-14 lg:grid-cols-[1.12fr_1fr] lg:gap-16">
           <div className="animate-fade-up">
             <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              For independent retailers, restaurants and small groups
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              For independent retailers and restaurants
             </p>
 
-            <h1 className="mt-6 text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]">
-              Retailers overpay{' '}
-              <span className="whitespace-nowrap text-primary">4–11%</span> on supplier deals.
-              <br />
-              Usually without knowing it.
+            <h1 className="mt-6 text-balance text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.25rem]">
+              Retailers overpay <span className="whitespace-nowrap text-primary">4–11%</span> on
+              supplier deals.
+              <span className="mt-1 block text-foreground/55">Usually without knowing it.</span>
             </h1>
 
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+            <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">
               The discount on the front page is not the price you pay. DealGuard reads a supplier
               offer, works out the true net cost per unit after rebates, freight, surcharges and
               payment terms, checks it against what you paid last time, and writes the counter-offer

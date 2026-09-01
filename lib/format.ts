@@ -26,26 +26,37 @@ export function formatCompactCurrency(value: number, currency = CURRENCY_FALLBAC
   }).format(value);
 }
 
+/**
+ * Unit costs need more precision than invoice totals — a tenth of a cent per
+ * kilo is real money at volume. Decimals are fixed within a magnitude band so
+ * a column of them stays aligned.
+ */
 export function formatUnitPrice(value: number | null | undefined, currency = CURRENCY_FALLBACK): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return '—';
-  const dp = Math.abs(value) < 10 ? 4 : 3;
+  const magnitude = Math.abs(value);
+  const dp = magnitude >= 100 ? 2 : magnitude >= 1 ? 3 : 4;
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
-    minimumFractionDigits: 2,
+    minimumFractionDigits: dp,
     maximumFractionDigits: dp,
   }).format(value);
 }
 
+/** "6%" rather than "6.0%", but "9.6%" keeps its decimal. */
 export function formatPercent(value: number | null | undefined, dp = 1): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return '—';
-  return `${value.toFixed(dp)}%`;
+  return `${trimTrailingZeros(value.toFixed(dp))}%`;
 }
 
 export function formatSignedPercent(value: number | null | undefined, dp = 1): string {
   if (value === null || value === undefined || !Number.isFinite(value)) return '—';
   const sign = value > 0 ? '+' : '';
-  return `${sign}${value.toFixed(dp)}%`;
+  return `${sign}${trimTrailingZeros(value.toFixed(dp))}%`;
+}
+
+function trimTrailingZeros(fixed: string): string {
+  return fixed.includes('.') ? fixed.replace(/\.?0+$/, '') : fixed;
 }
 
 export function formatNumber(value: number | null | undefined, dp = 0): string {

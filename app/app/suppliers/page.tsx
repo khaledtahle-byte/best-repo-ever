@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatCurrency, formatDate, formatNumber } from '@/lib/format';
+import { formatCurrency, formatDate, formatNumber, formatSignedPercent } from '@/lib/format';
 import { median } from '@/lib/utils';
 
 export const metadata: Metadata = { title: 'Suppliers' };
@@ -235,8 +235,7 @@ function ProductMovers({
                     ) : (
                       <TrendingDown className="h-3.5 w-3.5" />
                     )}
-                    {mover.deltaPct > 0 ? '+' : ''}
-                    {mover.deltaPct.toFixed(1)}%
+                    {formatSignedPercent(mover.deltaPct)}
                   </span>
                 </TableCell>
               </TableRow>
